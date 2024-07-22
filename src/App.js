@@ -1,25 +1,31 @@
+import React, { useState } from 'react';
 import './App.css';
 import io from 'socket.io-client';
+import JoiningRoom from './components/JoiningRoom';
+import AuctionTable from './components/AuctionTable';
+
+const prodUrl = "https://node-backend-92lw.onrender.com/"
+// const local = "http://localhost:8080/"
+const socket = io(prodUrl);
 
 
 function App() {
-  async function callingApi() {
-    console.log("started")
-    let res = await fetch('https://node-backend-92lw.onrender.com/')
-    let temp = await res.json()
-    console.log(temp)
-    const SOCKET_SERVER_URL = 'https://node-backend-92lw.onrender.com/';
-    const socket = io(SOCKET_SERVER_URL);
-    socket.on('connection', () => {
-      console.log("connected to socket")
+
+  const [showAuctionTable, setShowAuctionTable] = useState(false)
+  const [users, setUsers] = useState([])
+  
+  function joinRoom(name, roomId) {
+    socket.emit("join-room", { name, roomId });
+    socket.on('roomJoined', (users) => {
+      setShowAuctionTable(true)
+      setUsers([...users])
     })
-    setTimeout(()=>{console.log(socket)},10000)
   }
+
   return (
     <div className="App">
-      <h1>Hello World</h1>
-      <h2>Srujan</h2>
-      <button onClick={callingApi}>click me</button>
+      <h1>Welcome to Auction Simulator</h1>
+      {showAuctionTable ? <AuctionTable socket={socket} users={users} /> : <JoiningRoom handleJoinRoom={joinRoom} />}
     </div>
   );
 }
