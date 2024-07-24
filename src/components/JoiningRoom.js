@@ -6,7 +6,6 @@ function JoiningRoom({handleJoinRoom}) {
     const roomRef = useRef('')
     const handleSubmit = (e)=>{
         e.preventDefault()
-        console.log(nameRef.current)
         handleJoinRoom(nameRef.current.value,roomRef.current.value);
     }
     return (

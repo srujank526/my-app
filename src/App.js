@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useCallback } from 'react';
 import './App.css';
 import io from 'socket.io-client';
 import JoiningRoom from './components/JoiningRoom';
@@ -14,13 +14,13 @@ function App() {
   const [showAuctionTable, setShowAuctionTable] = useState(false)
   const [users, setUsers] = useState([])
   
-  function joinRoom(name, roomId) {
+  const joinRoom=useCallback((name, roomId)=> {
     socket.emit("join-room", { name, roomId });
     socket.on('roomJoined', (users) => {
       setShowAuctionTable(true)
       setUsers([...users])
     })
-  }
+  },[])
 
   return (
     <div className="App">
