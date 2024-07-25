@@ -17,13 +17,14 @@ function AuctionScreen({ users, socket, isGameEnd, isPlayerSold, handleGameEnd, 
         }
     })
     socket.on('resPlayer', (data) => {
+        setCurrBidWith({})
         setCurrPlayer(data)
         if (data === null) setshowSetButton(true)
         else handleShowBidButton(true)
     })
-    // socket.on('currentBid', (data) => {
-    //     console.log("auction screen", data)
-    // })
+    socket.on('res-players-sold-details', () => {
+        setCurrBidWith({})
+    })
     socket.on('resBidPlaced', (data) => {
         let person = users.filter((user) => user.socketId === data.socketId)
         if (person.length !== 0) {
@@ -42,17 +43,18 @@ function AuctionScreen({ users, socket, isGameEnd, isPlayerSold, handleGameEnd, 
     const handleSellPLayerButton = () => {
         handleSellPlayer(currBidWith.socketId, currPlayer, currBidWith.amount)
         handleShowBidButton(false)
+        setCurrBidWith({})
     }
 
     return (<>
         {isGameEnd ? <h1>End of Auction....<br /> Thank you for playing</h1> :
             <div className='screen'>
-                <div>Current Set: {showSetButton ? 'Draw a Set...' : currSet}</div>
+                <h3>Current Set: {showSetButton ? 'Draw a Set...' : currSet}</h3>
                 {currPlayer ? <div>
-                    <div>Current Player: {currPlayer.name}</div>
-                    <div>Base Price: {currPlayer.basePrice}L</div>
-                    <h2>Current Bid is with: {currBidWith.name} at {currBidWith.amount}L</h2>
+                    <h3>Current Player: {currPlayer.name}</h3>
+                    <h4>Base Price: {currPlayer.basePrice}L</h4>
                 </div> : ''}
+                {currBidWith.name?<h4>Current Bid is with: {currBidWith.name} at {currBidWith.amount}L</h4>:''}
                 {users.map((user) => (
                     user.socketId === socket.id && user.isAdmin ? (
                         <div key={user.socketId}>
