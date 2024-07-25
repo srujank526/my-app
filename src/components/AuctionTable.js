@@ -32,6 +32,7 @@ function AuctionTable({ socket, users }) {
         setPlayersBoughtData([...data])
         console.log("isPlayerSold is setted to true")
         setIsPlayerSold(true)
+        setShowBidButton(false)
     })
 
 
