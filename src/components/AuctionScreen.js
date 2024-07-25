@@ -2,7 +2,7 @@ import './AuctionScreen.css'
 import React, { useState } from 'react'
 
 
-function AuctionScreen({ users, socket, isGameEnd, handleGameEnd,handleSellPlayer }) {
+function AuctionScreen({ users, socket, isGameEnd, isPlayerSold, handleGameEnd, handleSellPlayer, handleShowBidButton }) {
 
     const [currSet, setCurrSet] = useState('')
     const [showSetButton, setshowSetButton] = useState(true)
@@ -19,6 +19,7 @@ function AuctionScreen({ users, socket, isGameEnd, handleGameEnd,handleSellPlaye
     socket.on('resPlayer', (data) => {
         setCurrPlayer(data)
         if (data === null) setshowSetButton(true)
+        else handleShowBidButton(true)
     })
     // socket.on('currentBid', (data) => {
     //     console.log("auction screen", data)
@@ -26,7 +27,7 @@ function AuctionScreen({ users, socket, isGameEnd, handleGameEnd,handleSellPlaye
     socket.on('resBidPlaced', (data) => {
         let person = users.filter((user) => user.socketId === data.socketId)
         if (person.length !== 0) {
-            let obj = { name: person[0].name, amount: data.amount }
+            let obj = { name: person[0].name, amount: data.amount, socketId: data.socketId }
             setCurrBidWith(obj)
         }
 
@@ -37,6 +38,10 @@ function AuctionScreen({ users, socket, isGameEnd, handleGameEnd,handleSellPlaye
     }
     const getPlayer = () => {
         socket.emit('reqPlayer')
+    }
+    const handleSellPLayerButton = () => {
+        handleSellPlayer(currBidWith.socketId, currPlayer, currBidWith.amount)
+        handleShowBidButton(false)
     }
 
     return (<>
@@ -49,7 +54,7 @@ function AuctionScreen({ users, socket, isGameEnd, handleGameEnd,handleSellPlaye
                     <h2>Current Bid is with: {currBidWith.name} at {currBidWith.amount}L</h2>
                 </div> : ''}
                 {showSetButton ? <button onClick={getSet}>get Set</button> : <button onClick={getPlayer}>get player</button>}
-                <button onClick={()=>handleSellPlayer(socket.id,currPlayer,currBidWith.amount)}>sell player</button>
+                {isPlayerSold ? '' : <button onClick={handleSellPLayerButton}>sell player</button>}
             </div>}
     </>
     );
