@@ -53,8 +53,20 @@ function AuctionScreen({ users, socket, isGameEnd, isPlayerSold, handleGameEnd, 
                     <div>Base Price: {currPlayer.basePrice}L</div>
                     <h2>Current Bid is with: {currBidWith.name} at {currBidWith.amount}L</h2>
                 </div> : ''}
-                {showSetButton ? <button onClick={getSet}>get Set</button> : <button onClick={getPlayer}>get player</button>}
-                {isPlayerSold ? '' : <button onClick={handleSellPLayerButton}>sell player</button>}
+                {users.map((user) => (
+                    user.socketId === socket.id && user.isAdmin ? (
+                        <div key={user.socketId}>
+                            {showSetButton ? (
+                                <button onClick={getSet}>get Set</button>
+                            ) : (
+                                <button onClick={getPlayer}>get player</button>
+                            )}
+                            {!isPlayerSold && <button onClick={handleSellPLayerButton}>sell player</button>}
+                        </div>
+                    ) : null
+                ))}
+
+
             </div>}
     </>
     );

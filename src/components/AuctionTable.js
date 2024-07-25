@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import AuctionScreen from "./AuctionScreen";
-// import PlayersBoughtTable from "./PlayersBoughtTable";
 import './AuctionTable.css'
 function AuctionTable({ socket, users }) {
     const [isGameEnd, setIsGameEnd] = useState(false);
@@ -9,6 +8,9 @@ function AuctionTable({ socket, users }) {
     const [playersBoughtData, setPlayersBoughtData] = useState(users)
     const [isPlayerSold, setIsPlayerSold] = useState(true)
 
+    useEffect(()=>{
+        setPlayersBoughtData(users)
+    },[users])
 
     socket.on('currentBid', (data) => {
         if (data.user === null) setToBidAmount(data.bidAmount)
@@ -75,7 +77,6 @@ function AuctionTable({ socket, users }) {
                     </div>
                 ))}
             </div>
-            {/* <PlayersBoughtTable playersBoughtData={playersBoughtData} /> */}
         </>
     )
 }
