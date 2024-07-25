@@ -6,7 +6,7 @@ function AuctionTable({ socket, users }) {
     const [isGameEnd, setIsGameEnd] = useState(false);
     const [toBidAmount, setToBidAmount] = useState('')
     const [showBidButton, setShowBidButton] = useState(true)
-    const [playersBoughtData, setPlayersBoughtData] = useState([])
+    const [playersBoughtData, setPlayersBoughtData] = useState(users)
     const [isPlayerSold, setIsPlayerSold] = useState(true)
 
 
@@ -56,16 +56,21 @@ function AuctionTable({ socket, users }) {
             <div className="usersFloor">
                 {users.map((user) => (
                     <div key={user.socketId}>
-                        {user.name}
+                        {user.name}<br/>
+                        purse left: {playersBoughtData.map((obj) =>
+                                obj.socketId === user.socketId &&
+                                <span key={obj.socketId}>{obj.purse}</span>
+                            )}
+                            <br/>
                         {(socket.id === user.socketId && !isGameEnd && showBidButton) ? <button onClick={handleBid}>BID {toBidAmount}L</button> : ''}
-                        <ul>
+                        <ol>
                             {playersBoughtData.map((obj) =>
                                 obj.socketId === user.socketId &&
                                 obj.playersBought.map((player) => (
                                     <li key={player.name}>{player.name}</li>
                                 ))
                             )}
-                        </ul>
+                        </ol>
 
                     </div>
                 ))}
