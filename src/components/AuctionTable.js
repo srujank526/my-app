@@ -1,9 +1,15 @@
-// import { useState } from "react"
+import { useState } from "react"
 import './AuctionTable.css'
+import PlayinfElevenModal from './PlayingElevenModal'
 export default function AuctionTable({ users, socket, toBidAmount, showBidButton }) {
+
+    const [isModalOpen,setIsModalOpen] = useState(false)
 
     const handleBid = () => {
         socket.emit('bidPlaced', { socketId: socket.id, amount: toBidAmount })
+    }
+    const handleModalClose = ()=>{
+        setIsModalOpen(false)
     }
     return (<>
         <div className="usersFloor">
@@ -16,14 +22,8 @@ export default function AuctionTable({ users, socket, toBidAmount, showBidButton
                     )}
                     <br />
                     {(socket.id === user.socketId && showBidButton) ? <button onClick={handleBid}>BID {toBidAmount}L</button> : ''}
-                    <ol>
-                        {users.map((obj) =>
-                            obj.socketId === user.socketId &&
-                            obj.playersBought.map((player) => (
-                                <li key={player.name}>{player.name}</li>
-                            ))
-                        )}
-                    </ol>
+                    <button onClick={()=>setIsModalOpen(true)}>Create Playing XI</button>
+                    <PlayinfElevenModal isOpen={isModalOpen} socket={socket} users={users} handleModalClose={handleModalClose}></PlayinfElevenModal>
                 </div>
             ))}
         </div>
