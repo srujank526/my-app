@@ -7,7 +7,7 @@
   pointer-events: none;
 }
 button{
-  margin:50px
+  margin:25px
 }
 
 @media (prefers-reduced-motion: no-preference) {

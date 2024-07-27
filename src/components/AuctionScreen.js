@@ -1,8 +1,10 @@
 
 import { useState, useEffect } from 'react'
 import './AuctionScreen.css'
-export default function AuctionScreen({ socket, users, currSet, showSetButton, currPlayer, currBidWith, isPlayerSold, isGameEnd }) {
+import SkipModal from './SkipModal'
+export default function AuctionScreen({ socket, users, currSet, showSetButton, currPlayer, currBidWith, isPlayerSold, isGameEnd, showPlayerButton, showSkipPlayerButton }) {
     const [showSellButton, setShowSellButton] = useState(!isPlayerSold)
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     useEffect(() => {
         setShowSellButton(!isPlayerSold)
@@ -12,10 +14,15 @@ export default function AuctionScreen({ socket, users, currSet, showSetButton, c
         socket.emit('reqSet')
     }
     const getPlayer = () => {
-        // if(currPlayer.name !== null){
-        //     alert.call()
-        // }
         socket.emit('reqPlayer')
+    }
+    const skipPlayer = () => {
+        setIsModalOpen(true)
+    }
+    const handleCloseModal = (toGetPlayer) => {
+        console.log(toGetPlayer)
+        if (toGetPlayer) getPlayer()
+        setIsModalOpen(false)
     }
     const handleSellPLayerButton = () => {
         setShowSellButton(false)
@@ -25,6 +32,9 @@ export default function AuctionScreen({ socket, users, currSet, showSetButton, c
     return (<>
         {isGameEnd ? <h1>End of Auction....<br /> Thank you for playing</h1> :
             <div className='screen'>
+                <SkipModal isOpen={isModalOpen} handleCloseModal={handleCloseModal}>
+                    <h3>Are you sure want to skip {currPlayer.name}?</h3>
+                </SkipModal>
                 <h3>Current Set: {showSetButton ? 'Draw a Set...' : currSet}</h3>
                 {currPlayer ? <div>
                     <h3>Current Player: {currPlayer.name}</h3>
@@ -35,7 +45,8 @@ export default function AuctionScreen({ socket, users, currSet, showSetButton, c
                     user.socketId === socket.id && user.isAdmin ? (
                         <div key={user.socketId}>
                             {showSetButton ? <button onClick={getSet}>get Set</button> : ''}
-                            {(!showSellButton && !showSetButton) ? <button onClick={getPlayer}>get player</button> : ''}
+                            {showPlayerButton ? <button onClick={getPlayer}>get player</button> : ''}
+                            {showSkipPlayerButton ? <button onClick={skipPlayer}>skip player</button> : ''}
                             {showSellButton ? <button onClick={handleSellPLayerButton}>sell player</button> : ''}
                         </div>
                     ) : null

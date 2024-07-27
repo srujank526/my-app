@@ -11,6 +11,8 @@ export default function AuctionRoom({ socket, users }) {
     //screen hooks
     const [currSet, setCurrSet] = useState('')
     const [showSetButton, setshowSetButton] = useState(true)
+    const [showPlayerButton, setshowPlayerButton] = useState(false)
+    const [showSkipPlayerButton, setshowSkipPlayerButton] = useState(false)
     const [currPlayer, setCurrPlayer] = useState('')
     const [currBidWith, setCurrBidWith] = useState({})
 
@@ -21,12 +23,17 @@ export default function AuctionRoom({ socket, users }) {
 
     //table listners
     socket.on('currentBid', (data) => {
-        if (data.user === null) setToBidAmount(data.bidAmount)
+        if (data.user === null) {
+            setToBidAmount(data.bidAmount)
+            setshowSkipPlayerButton(true)
+            setshowPlayerButton(false)
+        }
         else {
             setToBidAmount(() => data.bidAmount + 20)
         }
     })
     socket.on('resBidPlaced', (data) => {
+        setshowSkipPlayerButton(false)
         if (data.socketId === socket.id) {
             setShowBidButton(false)
         }
@@ -37,6 +44,7 @@ export default function AuctionRoom({ socket, users }) {
         else nextBidAmount = data.amount + 25
         setToBidAmount(nextBidAmount)
         setIsPlayerSold(false)
+        setshowPlayerButton(false)
 
         let person = users.filter((user) => user.socketId === data.socketId)
         if (person.length !== 0) {
@@ -49,6 +57,7 @@ export default function AuctionRoom({ socket, users }) {
         setNewUsersData([...data])
         setIsPlayerSold(true)
         setShowBidButton(false)
+        setshowPlayerButton(true)
         setCurrBidWith({})
     })
 
@@ -59,18 +68,22 @@ export default function AuctionRoom({ socket, users }) {
         if (data === null) {
             setIsGameEnd(true)
         }
+        setshowPlayerButton(true)
     })
     socket.on('resPlayer', (data) => {
         setCurrBidWith({})
         setCurrPlayer(data)
-        if (data === null) setshowSetButton(true)
+        if (data === null) {
+            setshowSetButton(true)
+            setshowPlayerButton(false)
+        }
         else setShowBidButton(true)
     })
 
     return (
         <>
             <h1>new implementation</h1>
-            <AuctionScreen socket={socket} users={newUsersData} currSet={currSet} showSetButton={showSetButton} currPlayer={currPlayer} currBidWith={currBidWith} isPlayerSold={isPlayerSold} isGameEnd={isGameEnd} />
+            <AuctionScreen socket={socket} users={newUsersData} currSet={currSet} showSetButton={showSetButton} currPlayer={currPlayer} currBidWith={currBidWith} isPlayerSold={isPlayerSold} isGameEnd={isGameEnd} showPlayerButton={showPlayerButton} showSkipPlayerButton={showSkipPlayerButton} />
             <AuctionTable socket={socket} users={newUsersData} toBidAmount={toBidAmount} showBidButton={showBidButton} />
         </>
     )
