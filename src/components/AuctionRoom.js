@@ -5,7 +5,7 @@ import AuctionScreen from "./AuctionScreen";
 export default function AuctionRoom({ socket, users }) {
     const [isGameEnd, setIsGameEnd] = useState(false);
     const [toBidAmount, setToBidAmount] = useState('')
-    const [showBidButton, setShowBidButton] = useState(true)
+    const [showBidButton, setShowBidButton] = useState(false)
     const [isPlayerSold, setIsPlayerSold] = useState(true)
     const [newUsersData, setNewUsersData] = useState([...users])
     //screen hooks
@@ -76,13 +76,18 @@ export default function AuctionRoom({ socket, users }) {
         if (data === null) {
             setshowSetButton(true)
             setshowPlayerButton(false)
+            setShowBidButton(false)
+            setshowSkipPlayerButton(false)
         }
-        else setShowBidButton(true)
+        else {
+            setShowBidButton(true)
+            setShowBidButton(true)
+            setshowSkipPlayerButton(true)
+        }
     })
 
     return (
         <>
-            <h1>new implementation</h1>
             <AuctionScreen socket={socket} users={newUsersData} currSet={currSet} showSetButton={showSetButton} currPlayer={currPlayer} currBidWith={currBidWith} isPlayerSold={isPlayerSold} isGameEnd={isGameEnd} showPlayerButton={showPlayerButton} showSkipPlayerButton={showSkipPlayerButton} />
             <AuctionTable socket={socket} users={newUsersData} toBidAmount={toBidAmount} showBidButton={showBidButton} />
         </>

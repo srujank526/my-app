@@ -32,9 +32,9 @@ export default function AuctionScreen({ socket, users, currSet, showSetButton, c
     return (<>
         {isGameEnd ? <h1>End of Auction....<br /> Thank you for playing</h1> :
             <div className='screen'>
-                <SkipModal isOpen={isModalOpen} handleCloseModal={handleCloseModal}>
-                    <h3>Are you sure want to skip {currPlayer.name}?</h3>
-                </SkipModal>
+                {currPlayer ? <SkipModal isOpen={isModalOpen} handleCloseModal={handleCloseModal}>
+                    <h3>Are you sure want to skip {currPlayer.name || ''}?</h3>
+                </SkipModal> : ''}
                 <h3>Current Set: {showSetButton ? 'Draw a Set...' : currSet}</h3>
                 {currPlayer ? <div>
                     <h3>Current Player: {currPlayer.name}</h3>
