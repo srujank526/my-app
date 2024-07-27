@@ -1,51 +1,27 @@
+
+import { useState, useEffect } from 'react'
 import './AuctionScreen.css'
-import React, { useState } from 'react'
+export default function AuctionScreen({ socket, users, currSet, showSetButton, currPlayer, currBidWith, isPlayerSold, isGameEnd }) {
+    const [showSellButton, setShowSellButton] = useState(!isPlayerSold)
 
-
-function AuctionScreen({ users, socket, isGameEnd, isPlayerSold, handleGameEnd, handleSellPlayer, handleShowBidButton }) {
-
-    const [currSet, setCurrSet] = useState('')
-    const [showSetButton, setshowSetButton] = useState(true)
-    const [currPlayer, setCurrPlayer] = useState('')
-    const [currBidWith, setCurrBidWith] = useState({})
-
-    socket.on('resSet', (data) => {
-        setshowSetButton(false)
-        setCurrSet(data)
-        if (data === null) {
-            handleGameEnd(true)
-        }
-    })
-    socket.on('resPlayer', (data) => {
-        setCurrBidWith({})
-        setCurrPlayer(data)
-        if (data === null) setshowSetButton(true)
-        else handleShowBidButton(true)
-    })
-    socket.on('res-players-sold-details', () => {
-        setCurrBidWith({})
-    })
-    socket.on('resBidPlaced', (data) => {
-        let person = users.filter((user) => user.socketId === data.socketId)
-        if (person.length !== 0) {
-            let obj = { name: person[0].name, amount: data.amount, socketId: data.socketId }
-            setCurrBidWith(obj)
-        }
-
-    })
+    useEffect(() => {
+        setShowSellButton(!isPlayerSold)
+    }, [isPlayerSold])
 
     const getSet = () => {
         socket.emit('reqSet')
     }
     const getPlayer = () => {
+        // if(currPlayer.name !== null){
+        //     alert.call()
+        // }
         socket.emit('reqPlayer')
     }
     const handleSellPLayerButton = () => {
-        handleSellPlayer(currBidWith.socketId, currPlayer, currBidWith.amount)
-        handleShowBidButton(false)
-        setCurrBidWith({})
+        setShowSellButton(false)
+        socket.emit('sell-player', { socketId: currBidWith.socketId, playerObj: currPlayer, bidAmount: currBidWith.amount })
+        socket.emit('req-players-sold-details')
     }
-
     return (<>
         {isGameEnd ? <h1>End of Auction....<br /> Thank you for playing</h1> :
             <div className='screen'>
@@ -54,23 +30,16 @@ function AuctionScreen({ users, socket, isGameEnd, isPlayerSold, handleGameEnd, 
                     <h3>Current Player: {currPlayer.name}</h3>
                     <h4>Base Price: {currPlayer.basePrice}L</h4>
                 </div> : ''}
-                {currBidWith.name?<h4>Current Bid is with: {currBidWith.name} at {currBidWith.amount}L</h4>:''}
+                {currBidWith.name ? <h4>Current Bid is with: {currBidWith.name} at {currBidWith.amount}L</h4> : ''}
                 {users.map((user) => (
                     user.socketId === socket.id && user.isAdmin ? (
                         <div key={user.socketId}>
-                            {showSetButton ? (
-                                <button onClick={getSet}>get Set</button>
-                            ) : (
-                                <button onClick={getPlayer}>get player</button>
-                            )}
-                            {!isPlayerSold && <button onClick={handleSellPLayerButton}>sell player</button>}
+                            {showSetButton ? <button onClick={getSet}>get Set</button> : ''}
+                            {(!showSellButton && !showSetButton) ? <button onClick={getPlayer}>get player</button> : ''}
+                            {showSellButton ? <button onClick={handleSellPLayerButton}>sell player</button> : ''}
                         </div>
                     ) : null
                 ))}
-
-
             </div>}
-    </>
-    );
+    </>)
 }
-export default AuctionScreen;
