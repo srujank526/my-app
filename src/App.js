@@ -24,7 +24,9 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Welcome to Auction Simulator</h1>
+      <header className="bg-primary text-white text-center py-3">
+        <h1 className="display-4">Welcome to Auction Simulator</h1>
+      </header>
       {showAuctionRoom ? <AuctionRoom socket={socket} users={users} /> : <JoiningRoom handleJoinRoom={joinRoom} />}
 
     </div>

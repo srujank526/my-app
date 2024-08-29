@@ -1,35 +1,39 @@
-import React, {useRef} from 'react'
+import React, { useRef } from 'react'
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import './JoiningRoom.css'
 
 
-function JoiningRoom({handleJoinRoom}) {
+function JoiningRoom({ handleJoinRoom }) {
     const nameRef = useRef('')
     const roomRef = useRef('')
-    const handleSubmit = (e)=>{
+    const handleSubmit = (e) => {
         e.preventDefault()
-        handleJoinRoom(nameRef.current.value,roomRef.current.value);
+        handleJoinRoom(nameRef.current.firstChild.value, roomRef.current.firstChild.value);
     }
     return (
-        <form>
-            <label htmlFor="name">user name</label>
-            <input
-                ref={nameRef}
-                type="text"
-                id="name"
-                placeholder="enter user name"
-                required
-                
-            />
-            <label htmlFor="roomId">room id</label>
-            <input
-                ref = {roomRef}
-                type="text"
-                id="roomId"
-                placeholder="enter room Id"
-                required
-                
-            />
-            <button type="submit" onClick={handleSubmit}>Create/Join</button>
-        </form>
+        <div className='container' >
+            <Form className='form'>
+                <FloatingLabel
+                    controlId="floatingInput"
+                    label="user name"
+                    className="mb-3"
+                    ref={nameRef}
+                >
+                    <Form.Control type="text" placeholder="name" />
+                </FloatingLabel>
+                <FloatingLabel
+                    controlId="floatingInput"
+                    label="room Id"
+                    className="mb-3"
+                    ref={roomRef}
+                >
+                    <Form.Control type="text" placeholder="name" />
+                </FloatingLabel>
+                <Button type="submit" onClick={handleSubmit}>Create/Join</Button>
+            </Form>
+        </div>
     )
 }
 export default JoiningRoom;
