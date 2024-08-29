@@ -20,7 +20,7 @@ export default function AuctionScreen({ socket, users, currSet, showSetButton, c
         setIsModalOpen(true)
     }
     const handleCloseModal = (toGetPlayer) => {
-        console.log(toGetPlayer)
+        // console.log(toGetPlayer)
         if (toGetPlayer) getPlayer()
         setIsModalOpen(false)
     }

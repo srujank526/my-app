@@ -53,12 +53,15 @@ export default function AuctionRoom({ socket, users }) {
         }
     })
     socket.on('res-players-sold-details', (data) => {
-        console.log(data)
+        // console.log(data)
         setNewUsersData([...data])
         setIsPlayerSold(true)
         setShowBidButton(false)
         setshowPlayerButton(true)
         setCurrBidWith({})
+    })
+    socket.on('resUpdatePLayingXI',(data)=>{
+        setNewUsersData([...data])
     })
 
     //screen listners

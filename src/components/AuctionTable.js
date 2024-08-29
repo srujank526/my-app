@@ -1,14 +1,19 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import './AuctionTable.css'
-import PlayinfElevenModal from './PlayingElevenModal'
+import PlayingElevenModal from './PlayingElevenModal'
 export default function AuctionTable({ users, socket, toBidAmount, showBidButton }) {
 
-    const [isModalOpen,setIsModalOpen] = useState(false)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
+    useEffect(() => {
+        // console.log('users', users)
+    }, [users])
 
     const handleBid = () => {
         socket.emit('bidPlaced', { socketId: socket.id, amount: toBidAmount })
     }
-    const handleModalClose = ()=>{
+    const handleModalClose = (selectedPlayers) => {
+        // console.log(selectedPlayers)
         setIsModalOpen(false)
     }
     return (<>
@@ -22,8 +27,13 @@ export default function AuctionTable({ users, socket, toBidAmount, showBidButton
                     )}
                     <br />
                     {(socket.id === user.socketId && showBidButton) ? <button onClick={handleBid}>BID {toBidAmount}L</button> : ''}
-                    <button onClick={()=>setIsModalOpen(true)}>Create Playing XI</button>
-                    <PlayinfElevenModal isOpen={isModalOpen} socket={socket} users={users} handleModalClose={handleModalClose}></PlayinfElevenModal>
+                    {socket.id === user.socketId ? <button onClick={() => setIsModalOpen(true)}>Update Playing XI</button> : ''}
+                    <PlayingElevenModal isOpen={isModalOpen} socket={socket} users={users} handleModalClose={handleModalClose}></PlayingElevenModal>
+                     <ol>
+                        {user.playingXI.map(player => {
+                            return <li key={player}>{player}</li>
+                        })}
+                    </ol> 
                 </div>
             ))}
         </div>
