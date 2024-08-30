@@ -3,7 +3,6 @@ import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable'
 import DraggablePlayer from "./DraggablePlayer";
 
 const DraggablePlayingXI = ({ players }) => {
-    console.log(players)
     return (
         <>
         <SortableContext items={players} strategy={verticalListSortingStrategy}>
