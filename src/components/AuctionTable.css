@@ -1,4 +1,61 @@
-.usersFloor{
+.usersFloor {
     display: flex;
-    justify-content: space-around;
-}
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .user-info-card {
+    width: 100%;
+    max-width: 300px; 
+  }
+  
+  .user-details {
+    margin-bottom: 15px;
+  }
+  
+  .user-name {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333; 
+  }
+  
+  .user-purse {
+    font-size: 1rem;
+    color: #666; 
+  }
+  
+  .user-actions {
+    margin-bottom: 15px;
+  }
+  
+  .action-button {
+    margin-right: 10px;
+  }
+  
+  .playing-xi {
+    margin-top: 15px;
+  }
+  
+  .playing-xi h4 {
+    font-size: 1.1rem;
+    color: #333; 
+  }
+  
+
+  .playing-xi ol {
+    margin: 0;
+    padding-left: 0; 
+    list-style-type: none; 
+  }
+  
+  .playing-xi ol li {
+    padding: 10px;
+    border: 1px solid #ddd; 
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    margin-bottom: 10px; 
+    font-size: 1rem;
+    color: #333;
+    background-color: #fff; 
+  }

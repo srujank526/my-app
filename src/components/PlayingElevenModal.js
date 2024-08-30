@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { closestCorners, DndContext } from '@dnd-kit/core'
 import DraggablePlayingXI from './DraggablePlayingXI';
 import { arrayMove } from '@dnd-kit/sortable';
+import { Modal, Button, Form } from 'react-bootstrap';
 
 export default function PlayingElevenModal({ isOpen, socket, users, handleModalClose }) {
     const [step, setStep] = useState(0)
@@ -10,23 +11,23 @@ export default function PlayingElevenModal({ isOpen, socket, users, handleModalC
     const [selectedPlayers, setSelectedPlayers] = useState([]);
     const [playersWithId, setPlayersWithId] = useState([]);
 
-    const modalStyle = {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000
-    };
-    const modalContentStyle = {
-        backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '4px'
-    };
+    // const modalStyle = {
+    //     position: 'fixed',
+    //     top: 0,
+    //     left: 0,
+    //     width: '100%',
+    //     height: '100%',
+    //     backgroundColor: 'rgba(0,0,0,0.5)',
+    //     display: 'flex',
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     zIndex: 1000
+    // };
+    // const modalContentStyle = {
+    //     backgroundColor: 'white',
+    //     padding: '20px',
+    //     borderRadius: '4px'
+    // };
 
     useEffect(() => {
         if (isOpen) {
@@ -58,8 +59,8 @@ export default function PlayingElevenModal({ isOpen, socket, users, handleModalC
             setPlayersWithId(() => tempArr)
         }
         else {
-            const arr = playersWithId.map(({id,name})=>name)
-            socket.emit('reqUpdatePlayingXI', { socketId: socket.id,selectedPlayers: arr })
+            const arr = playersWithId.map(({ id, name }) => name)
+            socket.emit('reqUpdatePlayingXI', { socketId: socket.id, selectedPlayers: arr })
             setStep(0)
             handleModalClose(arr);
         }
@@ -72,15 +73,15 @@ export default function PlayingElevenModal({ isOpen, socket, users, handleModalC
             setStep(0)
         }
     }
-    const getPlayerPosition = (id)=> playersWithId.findIndex(player=>player.id===id)
-    const handleDragEnd =(event)=>{
-        const {active,over} = event
+    const getPlayerPosition = (id) => playersWithId.findIndex(player => player.id === id)
+    const handleDragEnd = (event) => {
+        const { active, over } = event
 
-        if(active.id === over.id)return
-        setPlayersWithId(()=>{
+        if (active.id === over.id) return
+        setPlayersWithId(() => {
             const originalPosition = getPlayerPosition(active.id)
             const newPosition = getPlayerPosition(over.id)
-            const newPlayerPositionArray = arrayMove(playersWithId,originalPosition,newPosition)
+            const newPlayerPositionArray = arrayMove(playersWithId, originalPosition, newPosition)
             setPlayersWithId(newPlayerPositionArray)
             return newPlayerPositionArray
         })
@@ -89,44 +90,58 @@ export default function PlayingElevenModal({ isOpen, socket, users, handleModalC
     if (!isOpen) return null;
 
     return ReactDOM.createPortal(
-        <div style={modalStyle}>
-
-            <div style={{ 'display': step === 0 ? 'block' : 'none' }}>
-                {players.length !== 0 ? (
-                    <div style={modalContentStyle}>
-                        {players.map(player => (
-                            <div key={player.name}>
-                                <input
+        <div>
+            <Modal show={step === 0} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Select Players</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {players.length > 0 ? (
+                        <div>
+                            {players.map(player => (
+                                <Form.Check
+                                    key={player.name}
                                     type="checkbox"
                                     id={player.name}
-                                    name={player.name}
-                                    value={player.name}
+                                    label={player.name}
                                     checked={selectedPlayers.includes(player.name)}
                                     onChange={() => handleCheckboxChange(player.name)}
                                     disabled={!selectedPlayers.includes(player.name) && selectedPlayers.length >= 11}
                                 />
-                                <label htmlFor={player.name}> {player.name}</label>
-                            </div>
-                        ))}
-                    </div>
-                ) : ''}
-                <div>
-                    <button onClick={handleNext}>Next</button>
-                    <button onClick={handleClose}>Close</button>
-                </div>
-            </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p>No players available.</p>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleNext} disabled={players.length===0}>
+                        Next
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
-            <div style={{ 'display': step === 1 ? 'block' : 'none' }}>
-                <div style={modalContentStyle}>
+            <Modal show={step === 1} onHide={handleClose} size="lg" centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Drag and Drop Players</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
                     <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
-                        <DraggablePlayingXI players = {playersWithId}/>
+                        <DraggablePlayingXI players={playersWithId} />
                     </DndContext>
-                    <div>
-                        <button onClick={handleNext}>Apply</button>
-                        <button onClick={handleClose}>Back</button>
-                    </div>
-                </div>
-            </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Back
+                    </Button>
+                    <Button variant="primary" onClick={handleNext}>
+                        Apply
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>,
         document.body
     );

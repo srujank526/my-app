@@ -20,7 +20,11 @@ export default function AuctionRoom({ socket, users }) {
         setNewUsersData([...users]);
     }, [users]);
 
-
+    const handlePlayerSkip = ()=>{
+        setshowPlayerButton(true)
+        setshowSkipPlayerButton(false)
+        setShowBidButton(false)
+    }
     //table listners
     socket.on('currentBid', (data) => {
         if (data.user === null) {
@@ -91,7 +95,7 @@ export default function AuctionRoom({ socket, users }) {
 
     return (
         <>
-            <AuctionScreen socket={socket} users={newUsersData} currSet={currSet} showSetButton={showSetButton} currPlayer={currPlayer} currBidWith={currBidWith} isPlayerSold={isPlayerSold} isGameEnd={isGameEnd} showPlayerButton={showPlayerButton} showSkipPlayerButton={showSkipPlayerButton} />
+            <AuctionScreen socket={socket} users={newUsersData} currSet={currSet} showSetButton={showSetButton} currPlayer={currPlayer} currBidWith={currBidWith} isPlayerSold={isPlayerSold} isGameEnd={isGameEnd} showPlayerButton={showPlayerButton} showSkipPlayerButton={showSkipPlayerButton} handlePlayerSkip={handlePlayerSkip} />
             <AuctionTable socket={socket} users={newUsersData} toBidAmount={toBidAmount} showBidButton={showBidButton} />
         </>
     )
