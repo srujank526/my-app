@@ -1,9 +1,10 @@
 
 import { useState, useEffect } from 'react'
 import { Modal, Card, Button } from 'react-bootstrap'
-export default function AuctionScreen({ socket, users, currSet, showSetButton, currPlayer, currBidWith, isPlayerSold, isGameEnd, showPlayerButton, showSkipPlayerButton, handlePlayerSkip }) {
+export default function AuctionScreen({ socket, users, currSet, showSetButton, currPlayer, currBidWith, isPlayerSold, isGameEnd, showPlayerButton, showSkipPlayerButton, handlePlayerSkip, biddingState }) {
     const [showSellButton, setShowSellButton] = useState(!isPlayerSold)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [soldToDetails, setSoldToDetails] = useState({})
 
     useEffect(() => {
         setShowSellButton(!isPlayerSold)
@@ -25,6 +26,7 @@ export default function AuctionScreen({ socket, users, currSet, showSetButton, c
     }
     const handleSellPLayerButton = () => {
         setShowSellButton(false)
+        setSoldToDetails({name:currBidWith.name,price:currBidWith.amount,player:currPlayer.name})
         socket.emit('sell-player', { socketId: currBidWith.socketId, playerObj: currPlayer, bidAmount: currBidWith.amount })
         socket.emit('req-players-sold-details')
     }
@@ -68,10 +70,14 @@ export default function AuctionScreen({ socket, users, currSet, showSetButton, c
                                 </div>
                             </div>
                         )}
-                        {currBidWith.name && (
+                        {biddingState !== 0 && (
                             <div style={{ backgroundColor: '#fff5e6', padding: '15px', borderRadius: '8px', marginBottom: '10px', animation: 'slideIn 0.5s ease-in' }}>
                                 <div style={{ color: '#ffc107', fontWeight: 'bold', fontSize: '1.2rem' }}>
-                                    Current Bid is with: {currBidWith.name} at {currBidWith.amount}L
+                                    {biddingState === 2 ? `Current Bid is with: ${currBidWith.name} at ${currBidWith.amount}L`
+                                        : biddingState === 1 ? 'No Bids Yet'
+                                            : biddingState === 3 ?
+                                                `${soldToDetails.player} Sold to ${soldToDetails.name} at ${soldToDetails.price}L`
+                                                : `${currPlayer.name} is unSold`}
                                 </div>
                             </div>
                         )}

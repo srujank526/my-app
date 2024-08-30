@@ -15,12 +15,15 @@ export default function AuctionRoom({ socket, users }) {
     const [showSkipPlayerButton, setshowSkipPlayerButton] = useState(false)
     const [currPlayer, setCurrPlayer] = useState('')
     const [currBidWith, setCurrBidWith] = useState({})
+    const [biddingState, setBiddingState] = useState(0) 
+    //0 -> null,1 -> no bids yet, 2->bidding going on 3 -> player sold 4 -> unsold
 
     useEffect(() => {
         setNewUsersData([...users]);
     }, [users]);
 
     const handlePlayerSkip = ()=>{
+        setBiddingState(4)
         setshowPlayerButton(true)
         setshowSkipPlayerButton(false)
         setShowBidButton(false)
@@ -37,6 +40,7 @@ export default function AuctionRoom({ socket, users }) {
         }
     })
     socket.on('resBidPlaced', (data) => {
+        setBiddingState(2)
         setshowSkipPlayerButton(false)
         if (data.socketId === socket.id) {
             setShowBidButton(false)
@@ -57,6 +61,7 @@ export default function AuctionRoom({ socket, users }) {
         }
     })
     socket.on('res-players-sold-details', (data) => {
+        setBiddingState(3)
         // console.log(data)
         setNewUsersData([...data])
         setIsPlayerSold(true)
@@ -81,12 +86,14 @@ export default function AuctionRoom({ socket, users }) {
         setCurrBidWith({})
         setCurrPlayer(data)
         if (data === null) {
+            setBiddingState(0)
             setshowSetButton(true)
             setshowPlayerButton(false)
             setShowBidButton(false)
             setshowSkipPlayerButton(false)
         }
         else {
+            setBiddingState(1)
             setShowBidButton(true)
             setShowBidButton(true)
             setshowSkipPlayerButton(true)
@@ -95,7 +102,7 @@ export default function AuctionRoom({ socket, users }) {
 
     return (
         <>
-            <AuctionScreen socket={socket} users={newUsersData} currSet={currSet} showSetButton={showSetButton} currPlayer={currPlayer} currBidWith={currBidWith} isPlayerSold={isPlayerSold} isGameEnd={isGameEnd} showPlayerButton={showPlayerButton} showSkipPlayerButton={showSkipPlayerButton} handlePlayerSkip={handlePlayerSkip} />
+            <AuctionScreen socket={socket} users={newUsersData} currSet={currSet} showSetButton={showSetButton} currPlayer={currPlayer} currBidWith={currBidWith} isPlayerSold={isPlayerSold} isGameEnd={isGameEnd} showPlayerButton={showPlayerButton} showSkipPlayerButton={showSkipPlayerButton} handlePlayerSkip={handlePlayerSkip} biddingState={biddingState}/>
             <AuctionTable socket={socket} users={newUsersData} toBidAmount={toBidAmount} showBidButton={showBidButton} />
         </>
     )
