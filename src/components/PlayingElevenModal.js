@@ -55,7 +55,7 @@ export default function PlayingElevenModal({ isOpen, socket, users, handleModalC
     const handleNext = () => {
         if (step === 0) {
             setStep(1)
-            let tempArr = selectedPlayers.map((player, id) => ({ id: id, name: player }))
+            let tempArr = selectedPlayers.map((player, id) => ({ id: id+1, name: player }))
             setPlayersWithId(() => tempArr)
         }
         else {
@@ -126,7 +126,7 @@ export default function PlayingElevenModal({ isOpen, socket, users, handleModalC
 
             <Modal show={step === 1} onHide={handleClose} size="lg" centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Drag and Drop Players</Modal.Title>
+                    <Modal.Title>Adjust Your Playing XI</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
